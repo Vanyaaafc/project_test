@@ -17,107 +17,127 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
   final bloc = locator.get<ListScreenBloc>();
   TextEditingController titleController = TextEditingController();
   TextEditingController textController = TextEditingController();
+  TextEditingController searchController = TextEditingController();
+
+
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: bloc..add(GetAllNotesEvent()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(AppStrings.appBarMainName),
-          backgroundColor: Colors.amber,
-          actions: [
-            IconButton(
-              onPressed: () {
-                bloc.add(SearchNoteEvent());
-              },
-              icon: const Icon(Icons.search),
-            )
-          ],
-        ),
-        body: _View(bloc: bloc),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Dialog(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            const Center(
-                              child: Text(
-                                AppStrings.addNote,
-                                style: AppStyles.textStyle,
-                              ),
-                            ),
-                            const SizedBox(height: 10,),
-                            TextField(
-                              controller: titleController,
-                              decoration: InputDecoration(
-                                labelText: AppStrings.titleName,
-                                fillColor: Colors.white.withAlpha(235),
-                                border: const OutlineInputBorder(),
-                              ),
-                            ),
-                            const SizedBox(height: 16.0),
-                            TextField(
-                              controller: textController,
-                              decoration: InputDecoration(
-                                labelText: AppStrings.textName,
-                                fillColor: Colors.white.withAlpha(235),
-                                border: const OutlineInputBorder(),
-                              ),
-                              maxLines: null,
-                            ),
-                            const SizedBox(height: 16.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      if (titleController.text.isNotEmpty &&
-                                          textController.text.isNotEmpty) {
-                                        bloc.add(CreateNewNoteEvent(
-                                          model: NoteModel(
-                                            noteName: titleController.text,
-                                            noteDescription: textController.text,
-                                          ),
-                                        ));
-                                        titleController.clear();
-                                        textController.clear();
-                                        bloc.add(GetAllNotesEvent());
-                                        Navigator.pop(context);
-                                      }
-                                    });
-                                  },
-                                  child: const Text(AppStrings.buttonSave),
+      child: GestureDetector(
+        onTap: (){
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text(AppStrings.appBarMainName),
+            backgroundColor: Colors.amber,
+          ),
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: searchController,
+                  decoration: const InputDecoration(
+                    hintText: AppStrings.searchNameTextField,
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    bloc.add(SearchNoteEvent(keywords: value));
+                  },
+                ),
+              ),
+              Expanded(
+                child: _View(bloc: bloc),
+              ),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Dialog(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              const Center(
+                                child: Text(
+                                  AppStrings.addNote,
+                                  style: AppStyles.textStyle,
                                 ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text(AppStrings.buttonClose),
+                              ),
+                              const SizedBox(height: 10,),
+                              TextField(
+                                controller: titleController,
+                                decoration: InputDecoration(
+                                  labelText: AppStrings.titleName,
+                                  fillColor: Colors.white.withAlpha(235),
+                                  border: const OutlineInputBorder(),
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              const SizedBox(height: 16.0),
+                              TextField(
+                                controller: textController,
+                                decoration: InputDecoration(
+                                  labelText: AppStrings.textName,
+                                  fillColor: Colors.white.withAlpha(235),
+                                  border: const OutlineInputBorder(),
+                                ),
+                                maxLines: null,
+                              ),
+                              const SizedBox(height: 16.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        if (titleController.text.isNotEmpty &&
+                                            textController.text.isNotEmpty) {
+                                          bloc.add(CreateNewNoteEvent(
+                                            model: NoteModel(
+                                              noteName: titleController.text,
+                                              noteDescription: textController.text,
+                                            ),
+                                          ));
+                                          titleController.clear();
+                                          textController.clear();
+                                          bloc.add(GetAllNotesEvent());
+                                          Navigator.pop(context);
+                                        }
+                                      });
+                                    },
+                                    child: const Text(AppStrings.buttonSave),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text(AppStrings.buttonClose),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
+                    ],
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -182,9 +202,9 @@ class _ViewState extends State<_View> {
                                     );
                                   },
                                   child: Text(
-                                    noteList[index].noteDescription.length > 25
-                                        ? '${noteList[index].noteDescription.substring(0, 25)}...'
-                                        : noteList[index].noteDescription,
+                                    noteList[index].noteDescription,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
                                 ),
                               ),
@@ -307,7 +327,10 @@ class _ViewState extends State<_View> {
           return const Center(child: Text('List is empty. Please add note'));
         } else if (state is ListScreenIsError) {
           return Center(child: Text(state.message));
-        } else {
+        } else if (state is NoteNotFound){
+          return const Center(child: Text('Note not found'));
+        }
+        else {
           return const Center(child: Text('Unknown state'));
         }
       },

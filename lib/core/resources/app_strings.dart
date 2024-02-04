@@ -10,6 +10,7 @@ abstract class AppStrings {
   static const String buttonClose = 'Close';
   static const String buttonCancel = 'Cancel';
   static const String listScreenIsEmpty = 'Note screen is empty';
+  static const String searchNameTextField = 'Search';
 
   //Alert dialog
   static const String titleQuestionDelete = 'Delete note?';

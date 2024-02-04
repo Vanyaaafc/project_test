@@ -41,5 +41,12 @@ class DeleteNoteEvent extends ListScreenEvent {
   List<Object?> get props => [index, noteListLength];
 }
 
-class SearchNoteEvent extends ListScreenEvent {}
+class SearchNoteEvent extends ListScreenEvent {
+  final String keywords;
+
+  SearchNoteEvent({required this.keywords});
+
+  @override
+  List<Object?> get props => [keywords];
+}
 

@@ -14,13 +14,18 @@ class ListScreenIsLoading extends ListScreenState {}
 class ListScreenIsLoaded extends ListScreenState {
   final List<NoteModel> noteList;
 
-
   ListScreenIsLoaded({required this.noteList});
+
   @override
   List<Object> get props => [noteList];
+
+  @override
+  String toString() => 'ListScreenIsLoaded: $noteList';
 }
 
 class ListScreenIsEmpty extends ListScreenState {}
+
+class NoteNotFound extends ListScreenState {}
 
 //For Note
 class AddNoteState extends ListScreenState {}

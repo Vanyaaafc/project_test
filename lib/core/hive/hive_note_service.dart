@@ -45,4 +45,14 @@ class HiveNoteService {
       }
     }
   }
+  Future<List<NoteModel>> searchNotes(String keyword) async {
+    final box = await Hive.openBox<NoteModel>('note_box');
+    final allNotes = box.values.toList();
+
+    final filteredNotes = allNotes.where((note) =>
+    note.noteName.toLowerCase().contains(keyword.toLowerCase()) ||
+        note.noteDescription.toLowerCase().contains(keyword.toLowerCase()));
+
+    return filteredNotes.toList();
+  }
 }

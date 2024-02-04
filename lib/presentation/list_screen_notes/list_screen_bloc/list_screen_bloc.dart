@@ -14,22 +14,14 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
   final HiveNoteService noteService;
 
   ListScreenBloc({required this.noteService}) : super(ListScreenInitial()) {
-    on<GetAllNotesEvent>((event, emit) async {
-      await getAllNotes(event, emit);
-    });
-    on<CreateNewNoteEvent>((event, emit) async {
-      await addNote(event, emit);
-    });
-    on<DeleteNoteEvent>((event, emit) async {
-      await deleteNote(event, emit);
-    });
-    on<EditNoteEvent>((event, emit) async {
-      await editNote(event, emit);
-    });
+    on<GetAllNotesEvent>(_getAllNotesEvent);
+    on<CreateNewNoteEvent>(_addNoteEvent);
+    on<DeleteNoteEvent>(_deleteNoteEvent);
+    on<EditNoteEvent>(_editNoteEvent);
+    on<SearchNoteEvent>(_searchNoteEvent);
   }
 
-  Future<void> addNote(CreateNewNoteEvent event,
-      Emitter<ListScreenState> emit) async {
+  void _addNoteEvent(CreateNewNoteEvent event, Emitter<ListScreenState> emit) async {
     emit(AddNoteState());
     try {
       await noteService.addNoteToBox(event.model);
@@ -39,14 +31,12 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
     }
   }
 
-  Future<void> deleteNote(DeleteNoteEvent event,
-      Emitter<ListScreenState> emit) async {
+  void _deleteNoteEvent(DeleteNoteEvent event, Emitter<ListScreenState> emit) async {
     try {
       await noteService.deleteNoteFromBox(event.index);
       if(event.noteListLength <= 1 ){
         emit(ListScreenIsEmpty());
-      }
-      else {
+      } else {
         final result = await noteService.getAllNotesFromBox();
         emit(ListScreenIsLoaded(noteList: result));
       }
@@ -55,14 +45,13 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
     }
   }
 
-  Future<void> getAllNotes(GetAllNotesEvent event, Emitter<ListScreenState> emit) async {
+  void _getAllNotesEvent(GetAllNotesEvent event, Emitter<ListScreenState> emit) async {
     emit(ListScreenIsLoading());
-    try{
+    try {
       final result = await noteService.getAllNotesFromBox();
       if(result.isEmpty){
         emit(ListScreenIsEmpty());
-      }
-      else {
+      } else {
         emit(ListScreenIsLoaded(noteList: result));
       }
     } catch (e) {
@@ -70,7 +59,7 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
     }
   }
 
-  Future<void> editNote(EditNoteEvent event, Emitter<ListScreenState> emit) async {
+  void _editNoteEvent(EditNoteEvent event, Emitter<ListScreenState> emit) async {
     emit(EditNoteState());
     try {
       await noteService.editNoteInBox(event.index, event.model);
@@ -80,4 +69,18 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
       emit(NoteListError(message: e.toString()));
     }
   }
- }
+
+  void _searchNoteEvent(SearchNoteEvent event, Emitter<ListScreenState> emit) async {
+    emit(ListScreenIsLoading());
+    try {
+      final result = await noteService.searchNotes(event.keywords);
+      if (result.isEmpty) {
+        emit(NoteNotFound());
+      } else {
+        emit(ListScreenIsLoaded(noteList: result));
+      }
+    } catch (e) {
+      emit(NoteListError(message: e.toString()));
+    }
+  }
+}
