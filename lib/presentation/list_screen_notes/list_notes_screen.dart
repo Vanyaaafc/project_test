@@ -19,14 +19,12 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
   TextEditingController textController = TextEditingController();
   TextEditingController searchController = TextEditingController();
 
-
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: bloc..add(GetAllNotesEvent()),
       child: GestureDetector(
-        onTap: (){
+        onTap: () {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
@@ -36,6 +34,8 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
           ),
           body: Column(
             children: [
+
+              //Search TextField
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
@@ -55,12 +55,15 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
               ),
             ],
           ),
+
+          //Floating Action Button
           floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () {
               showDialog(
+                barrierDismissible: false,
                 context: context,
-                builder: (context) {
+                builder: (modelContext) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -74,10 +77,14 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
                               const Center(
                                 child: Text(
                                   AppStrings.addNote,
-                                  style: AppStyles.textStyle,
+                                  style: AppStyles.textStyleDialogWindow,
                                 ),
                               ),
-                              const SizedBox(height: 10,),
+                              const SizedBox(
+                                height: 10,
+                              ),
+
+                              //Dialog Window Title Text Field
                               TextField(
                                 controller: titleController,
                                 decoration: InputDecoration(
@@ -85,8 +92,11 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
                                   fillColor: Colors.white.withAlpha(235),
                                   border: const OutlineInputBorder(),
                                 ),
+                                maxLines: null,
                               ),
                               const SizedBox(height: 16.0),
+
+                              //Dialog Window Text TextField
                               TextField(
                                 controller: textController,
                                 decoration: InputDecoration(
@@ -98,8 +108,11 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
                               ),
                               const SizedBox(height: 16.0),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: [
+
+                                  //Dialog Window Button - Save -
                                   ElevatedButton(
                                     onPressed: () {
                                       setState(() {
@@ -108,21 +121,60 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
                                           bloc.add(CreateNewNoteEvent(
                                             model: NoteModel(
                                               noteName: titleController.text,
-                                              noteDescription: textController.text,
+                                              noteDescription:
+                                                  textController.text,
                                             ),
                                           ));
-                                          titleController.clear();
-                                          textController.clear();
+
                                           bloc.add(GetAllNotesEvent());
                                           Navigator.pop(context);
                                         }
+                                        if(titleController.text.isEmpty && textController.text.isEmpty){
+                                          showSnackBar(context,
+                                              AppStrings.fieldCannotBeEmpty);
+                                        } else if(titleController.text.isEmpty){
+                                          showSnackBar(context,
+                                              AppStrings.fillTitleField);
+                                        } else if(textController.text.isEmpty) {
+                                          showSnackBar(context,
+                                              AppStrings.fillTextField);
+                                        }
                                       });
+                                      titleController.clear();
+                                      textController.clear();
                                     },
                                     child: const Text(AppStrings.buttonSave),
                                   ),
+
+                                  //Dialog Window Button - Close -
                                   ElevatedButton(
                                     onPressed: () {
-                                      Navigator.pop(context);
+                                      showDialog(
+                                        barrierDismissible: false,
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text(AppStrings.questionCloseFloatingNote),
+                                            actions: [
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  titleController.clear();
+                                                  textController.clear();
+                                                  Navigator.pop(context);
+                                                  Navigator.pop(modelContext);
+                                                },
+                                                child: const Text(AppStrings.answerYes),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text(AppStrings.answerNo),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
                                     },
                                     child: const Text(AppStrings.buttonClose),
                                   ),
@@ -174,164 +226,260 @@ class _ViewState extends State<_View> {
             itemBuilder: (context, index) {
               return InkWell(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  child: Card(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: AppStyles.paddingNote,
-                                child: Text(noteList[index].noteName),
-                              ),
-                              SizedBox(height: 10,),
-                              Padding(
-                                padding: AppStyles.paddingNote,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: Text(noteList[index].noteName),
-                                          content: Text(noteList[index].noteDescription),
-                                        );
-                                      },
-                                    );
-                                  },
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+
+                  // Show Card Detail
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(noteList[index].noteName),
+                            content: Text(noteList[index].noteDescription),
+                          );
+                        },
+                      );
+                    },
+
+                    //Card
+                    child: Card(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+
+                                // Title Name in Card
+                                Padding(
+                                  padding: AppStyles.paddingNote,
                                   child: Text(
-                                    noteList[index].noteDescription,
+                                    noteList[index].noteName,
+                                    style: AppStyles.titleStyle,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Dialog(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        TextField(
-                                          controller: taskNameController,
-                                          decoration: InputDecoration(
-                                            labelText: AppStrings.titleName,
-                                            fillColor: Colors.white.withAlpha(235),
-                                            border: const OutlineInputBorder(),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 16.0),
-                                        TextField(
-                                          controller: taskDescriptionController,
-                                          decoration: InputDecoration(
-                                            labelText: AppStrings.textName,
-                                            fillColor: Colors.white.withAlpha(235),
-                                            border: const OutlineInputBorder(),
-                                          ),
-                                          maxLines: null,
-                                        ),
-                                        const SizedBox(height: 16.0),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                          children: [
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                if (taskNameController.text.isEmpty && taskDescriptionController.text.isEmpty) {
-                                                  showSnackBar(context, "Fields cannot be empty");
-                                                } else if (taskNameController.text.isEmpty) {
-                                                  showSnackBar(context, "Fill in the title field");
-                                                } else if (taskDescriptionController.text.isEmpty) {
-                                                  showSnackBar(context, "Fill in the text field");
-                                                } else {
-                                                  bloc.add(EditNoteEvent(
-                                                    index: index,
-                                                    model: NoteModel(
-                                                      noteName: taskNameController.text,
-                                                      noteDescription: taskDescriptionController.text,
-                                                    ),
-                                                  ));
-                                                  Navigator.pop(context);
-                                                }
-                                              },
-                                              child: const Text(AppStrings.buttonSave),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: const Text(AppStrings.buttonCancel),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+
+                                // Text name in Card
+                                Padding(
+                                  padding: AppStyles.paddingNote,
+                                  child: Text(
+                                    noteList[index].noteDescription,
+                                    style: AppStyles.textStyle,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
-                                );
-                              },
-                            );
-                            taskNameController.text = noteList[index].noteName;
-                            taskDescriptionController.text = noteList[index].noteDescription;
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text(AppStrings.titleQuestionDelete),
-                                  content: const Text(AppStrings.questionDelete),
-                                  actions: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        bloc.add(DeleteNoteEvent(
-                                          index: index,
-                                          noteListLength: noteList.length,
-                                        ));
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text(AppStrings.answerYes),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Button Edit Card Info
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Dialog(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Center(
+                                            child: Text(
+                                              AppStrings.editNote,
+                                              style: AppStyles.textStyleDialogWindow,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+
+                                          // Title in Edit Card Info
+                                          TextField(
+                                            controller: taskNameController,
+                                            decoration: InputDecoration(
+                                              labelText: AppStrings.titleName,
+                                              fillColor:
+                                                  Colors.white.withAlpha(235),
+                                              border:
+                                                  const OutlineInputBorder(),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16.0),
+
+                                          //Text in Edit Card Info
+                                          TextField(
+                                            controller:
+                                                taskDescriptionController,
+                                            decoration: InputDecoration(
+                                              labelText: AppStrings.textName,
+                                              fillColor:
+                                                  Colors.white.withAlpha(235),
+                                              border:
+                                                  const OutlineInputBorder(),
+                                            ),
+                                            maxLines: null,
+                                          ),
+                                          const SizedBox(height: 16.0),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+
+                                              // Button - Save - in Edit Card Info
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  if (taskNameController
+                                                          .text.isEmpty &&
+                                                      taskDescriptionController
+                                                          .text.isEmpty) {
+                                                    showSnackBar(context,
+                                                        AppStrings.fieldCannotBeEmpty);
+                                                  } else if (taskNameController
+                                                      .text.isEmpty) {
+                                                    showSnackBar(context,
+                                                        AppStrings.fillTitleField);
+                                                  } else if (taskDescriptionController
+                                                      .text.isEmpty) {
+                                                    showSnackBar(context,
+                                                        AppStrings.fillTextField);
+                                                  } else {
+                                                    bloc.add(EditNoteEvent(
+                                                      index: index,
+                                                      model: NoteModel(
+                                                        noteName:
+                                                            taskNameController
+                                                                .text,
+                                                        noteDescription:
+                                                            taskDescriptionController
+                                                                .text,
+                                                      ),
+                                                    ));
+                                                    taskNameController.clear();
+                                                    taskDescriptionController.clear();
+                                                    Navigator.pop(context);
+                                                  }
+                                                },
+                                                child: const Text(
+                                                    AppStrings.buttonSave),
+                                              ),
+
+                                              // Button - Cancel - in Edit Card Info
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  showDialog(
+                                                    barrierDismissible: false,
+                                                    context: context,
+                                                    builder: (modelContext) {
+                                                      return AlertDialog(
+                                                        title: const Text(AppStrings.questionCloseEditNote),
+                                                        actions: [
+                                                          ElevatedButton(
+                                                            onPressed: () {
+                                                              taskNameController.clear();
+                                                              taskDescriptionController.clear();
+                                                              Navigator.pop(context);
+                                                              Navigator.pop(modelContext);
+                                                            },
+                                                            child: const Text(AppStrings.answerYes),
+                                                          ),
+                                                          ElevatedButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(context);
+                                                            },
+                                                            child: const Text(AppStrings.answerNo),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: const Text(
+                                                    AppStrings.buttonCancel),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text(AppStrings.answerNo),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        )
-                      ],
+                                  );
+                                },
+                              );
+                              // taskNameController.text =
+                              //     noteList[index].noteName;
+                              // taskDescriptionController.text =
+                              //     noteList[index].noteDescription;
+                            },
+                          ),
+
+                          //Button Delete Card
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text(
+                                        AppStrings.titleQuestionDelete),
+                                    content:
+                                        const Text(AppStrings.questionDelete),
+                                    actions: [
+
+                                      //Button - Yes - in Delete Card
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          bloc.add(DeleteNoteEvent(
+                                            index: index,
+                                            noteListLength: noteList.length,
+                                          ));
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(AppStrings.answerYes),
+                                      ),
+
+                                      // Button - No - in Delete Card
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(AppStrings.answerNo),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
               );
             },
           );
+
+          // States
         } else if (state is ListScreenIsEmpty) {
-          return const Center(child: Text('List is empty. Please add note'));
+          return const Center(child: Text(AppStrings.stringListScreenIsEmpty));
         } else if (state is ListScreenIsError) {
           return Center(child: Text(state.message));
-        } else if (state is NoteNotFound){
-          return const Center(child: Text('Note not found'));
-        }
-        else {
-          return const Center(child: Text('Unknown state'));
+        } else if (state is NoteNotFound) {
+          return const Center(child: Text(AppStrings.stringNoteNotFound));
+        } else {
+          return const Center(child: Text(AppStrings.stringUnknownState));
         }
       },
     );

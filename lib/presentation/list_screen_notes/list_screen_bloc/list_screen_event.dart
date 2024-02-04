@@ -17,6 +17,7 @@ class CreateNewNoteEvent extends ListScreenEvent {
   List<Object?> get props => [model];
 }
 
+
 class EditNoteEvent extends ListScreenEvent {
   final int index;
   final NoteModel model;

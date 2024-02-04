@@ -31,16 +31,11 @@ class HiveNoteService {
     final box = await Hive.openBox<NoteModel>('note_box');
 
     if (index >= 0 && index < box.length) {
-      // Знаходимо нотатку за індексом
       final noteToUpdate = box.getAt(index);
 
-      // Перевіряємо, чи знайдена нотатка не є null
       if (noteToUpdate != null) {
-        // Оновлюємо текст нотатки
         noteToUpdate.noteName = updatedModel.noteName;
         noteToUpdate.noteDescription = updatedModel.noteDescription;
-
-        // Викликаємо метод saveChanges для автоматичного збереження змін
         noteToUpdate.saveChanges();
       }
     }
