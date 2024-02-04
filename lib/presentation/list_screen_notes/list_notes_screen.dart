@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/di/injection_container.dart';
@@ -23,198 +25,166 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: bloc..add(GetAllNotesEvent()),
-      child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text(AppStrings.appBarMainName),
-            backgroundColor: Colors.amber,
-          ),
-          body: Column(
-            children: [
-              //Search TextField
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: searchController,
-                  decoration: const InputDecoration(
-                    hintText: AppStrings.searchNameTextField,
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (value) {
-                    bloc.add(SearchNoteEvent(keywords: value));
-                  },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(AppStrings.appBarMainName),
+          backgroundColor: Colors.amber,
+        ),
+        body: Column(
+          children: [
+            //Search TextField
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: searchController,
+                decoration: const InputDecoration(
+                  hintText: AppStrings.searchNameTextField,
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  bloc.add(SearchNoteEvent(keywords: value));
+                },
               ),
-              Expanded(
-                child: _View(bloc: bloc),
-              ),
-            ],
-          ),
+            ),
+            Expanded(
+              child: _View(bloc: bloc),
+            ),
+          ],
+        ),
 
-          //Floating Action Button
-          floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.add),
-            onPressed: () {
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (modelContext) {
-                  return BlocBuilder<ListScreenBloc, ListScreenState>(
-                    bloc: bloc,
-                    builder: (context, state) {
-                      if (state is ListScreenIsLoaded ||
-                          state is ListScreenIsEmpty) {
-                        final newList = state.props.first as List<NoteModel>;
-                        return Column(
+        //Floating Action Button
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (modelContext) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Dialog(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Dialog(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    const Center(
-                                      child: Text(
-                                        AppStrings.addNote,
-                                        style: AppStyles.textStyleDialogWindow,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-
-                                    //Dialog Window Title Text Field
-                                    TextField(
-                                      controller: titleController,
-                                      decoration: InputDecoration(
-                                        labelText: AppStrings.titleName,
-                                        fillColor: Colors.white.withAlpha(235),
-                                        border: const OutlineInputBorder(),
-                                      ),
-                                      maxLines: null,
-                                    ),
-                                    const SizedBox(height: 16.0),
-
-                                    //Dialog Window Text TextField
-                                    TextField(
-                                      controller: textController,
-                                      decoration: InputDecoration(
-                                        labelText: AppStrings.textName,
-                                        fillColor: Colors.white.withAlpha(235),
-                                        border: const OutlineInputBorder(),
-                                      ),
-                                      maxLines: null,
-                                    ),
-                                    const SizedBox(height: 16.0),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        //Dialog Window Button - Save -
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              if (titleController
-                                                      .text.isNotEmpty &&
-                                                  textController
-                                                      .text.isNotEmpty) {
-                                                bloc.add(CreateNewNoteEvent(
-                                                  model: NoteModel(
-                                                    index: newList.length,
-                                                    noteName:
-                                                        titleController.text,
-                                                    noteDescription:
-                                                        textController.text,
-                                                  ),
-                                                ));
-
-                                                bloc.add(GetAllNotesEvent());
-                                                Navigator.pop(context);
-                                              }
-                                              if (titleController
-                                                      .text.isEmpty &&
-                                                  textController.text.isEmpty) {
-                                                showSnackBar(
-                                                    context,
-                                                    AppStrings
-                                                        .fieldCannotBeEmpty);
-                                              } else if (titleController
-                                                  .text.isEmpty) {
-                                                showSnackBar(context,
-                                                    AppStrings.fillTitleField);
-                                              } else if (textController
-                                                  .text.isEmpty) {
-                                                showSnackBar(context,
-                                                    AppStrings.fillTextField);
-                                              }
-                                            });
-                                            titleController.clear();
-                                            textController.clear();
-                                          },
-                                          child:
-                                              const Text(AppStrings.buttonSave),
-                                        ),
-
-                                        //Dialog Window Button - Close -
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            showDialog(
-                                              barrierDismissible: false,
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title: const Text(AppStrings
-                                                      .questionCloseFloatingNote),
-                                                  actions: [
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        titleController.clear();
-                                                        textController.clear();
-                                                        Navigator.pop(context);
-                                                        Navigator.pop(
-                                                            modelContext);
-                                                      },
-                                                      child: const Text(
-                                                          AppStrings.answerYes),
-                                                    ),
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: const Text(
-                                                          AppStrings.answerNo),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          },
-                                          child: const Text(
-                                              AppStrings.buttonClose),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                            const Center(
+                              child: Text(
+                                AppStrings.addNote,
+                                style: AppStyles.textStyleDialogWindow,
                               ),
                             ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+
+                            //Dialog Window Title Text Field
+                            TextField(
+                              controller: titleController,
+                              decoration: InputDecoration(
+                                labelText: AppStrings.titleName,
+                                fillColor: Colors.white.withAlpha(235),
+                                border: const OutlineInputBorder(),
+                              ),
+                              maxLines: null,
+                            ),
+                            const SizedBox(height: 16.0),
+
+                            //Dialog Window Text TextField
+                            TextField(
+                              controller: textController,
+                              decoration: InputDecoration(
+                                labelText: AppStrings.textName,
+                                fillColor: Colors.white.withAlpha(235),
+                                border: const OutlineInputBorder(),
+                              ),
+                              maxLines: null,
+                            ),
+                            const SizedBox(height: 16.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                //Dialog Window Button - Save -
+                                ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      if (titleController.text.isNotEmpty && textController.text.isNotEmpty) {
+                                        final timestamp = DateTime.now().millisecondsSinceEpoch % 0xFFFFFFFF;
+                                        bloc.add(CreateNewNoteEvent(
+                                          model: NoteModel(
+                                            id: timestamp,
+                                            noteName: titleController.text,
+                                            noteDescription: textController.text,
+                                          ),
+                                        ));
+
+                                        bloc.add(GetAllNotesEvent());
+                                        Navigator.pop(context);
+                                      }
+                                      if (titleController.text.isEmpty && textController.text.isEmpty) {
+                                        showSnackBar(context, AppStrings.fieldCannotBeEmpty);
+                                      } else if (titleController.text.isEmpty) {
+                                        showSnackBar(context, AppStrings.fillTitleField);
+                                      } else if (textController.text.isEmpty) {
+                                        showSnackBar(context, AppStrings.fillTextField);
+                                      }
+                                    });
+                                    titleController.clear();
+                                    textController.clear();
+                                  },
+                                  child: const Text(AppStrings.buttonSave),
+                                ),
+
+
+                                //Dialog Window Button - Close -
+                                ElevatedButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text(AppStrings
+                                              .questionCloseFloatingNote),
+                                          actions: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                titleController.clear();
+                                                textController.clear();
+                                                Navigator.pop(context);
+                                                Navigator.pop(modelContext);
+                                              },
+                                              child: const Text(
+                                                  AppStrings.answerYes),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text(
+                                                  AppStrings.answerNo),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: const Text(AppStrings.buttonClose),
+                                ),
+                              ],
+                            ),
                           ],
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    },
-                  );
-                },
-              );
-            },
-          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
         ),
       ),
     );
@@ -385,10 +355,8 @@ class _ViewState extends State<_View> {
                                                             .fillTextField);
                                                   } else {
                                                     bloc.add(EditNoteEvent(
-                                                      index:
-                                                          noteList[index].index,
                                                       model: NoteModel(
-                                                        index: index,
+                                                        id: state.noteList[index].id,
                                                         noteName:
                                                             taskNameController
                                                                 .text,
@@ -458,10 +426,10 @@ class _ViewState extends State<_View> {
                                   );
                                 },
                               );
-                              // taskNameController.text =
-                              //     noteList[index].noteName;
-                              // taskDescriptionController.text =
-                              //     noteList[index].noteDescription;
+                              taskNameController.text =
+                                  noteList[index].noteName;
+                              taskDescriptionController.text =
+                                  noteList[index].noteDescription;
                             },
                           ),
 
@@ -483,7 +451,7 @@ class _ViewState extends State<_View> {
                                       ElevatedButton(
                                         onPressed: () {
                                           bloc.add(DeleteNoteEvent(
-                                            index: noteList[index].index,
+                                            id: state.noteList[index].id,
                                             noteListLength: noteList.length,
                                           ));
                                           Navigator.pop(context);

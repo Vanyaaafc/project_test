@@ -5,13 +5,13 @@ part 'note_model.g.dart';
 @HiveType(typeId: 0)
 class NoteModel extends HiveObject {
   NoteModel({
-    required this.index,
+    required this.id,
     required this.noteName,
     required this.noteDescription,
   });
 
   @HiveField(0)
-  int index;
+  int id;
 
   @HiveField(1)
   String noteName;

@@ -33,11 +33,12 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
 
   void _deleteNoteEvent(DeleteNoteEvent event, Emitter<ListScreenState> emit) async {
     try {
-      await noteService.deleteNoteFromBox(event.index);
-      if(event.noteListLength <= 1 ){
+      await noteService.deleteNoteFromBox(event.id);
+      final result = await noteService.getAllNotesFromBox();
+
+      if (result.isEmpty) {
         emit(ListScreenIsEmpty(noteList: []));
       } else {
-        final result = await noteService.getAllNotesFromBox();
         emit(ListScreenIsLoaded(noteList: result));
       }
     } catch (e) {
@@ -62,7 +63,7 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
   void _editNoteEvent(EditNoteEvent event, Emitter<ListScreenState> emit) async {
     emit(EditNoteState());
     try {
-      await noteService.editNoteInBox(event.index, event.model);
+      await noteService.editNoteInBox(event.model);
       final result = await noteService.getAllNotesFromBox();
       emit(ListScreenIsLoaded(noteList: result));
     } catch (e) {
