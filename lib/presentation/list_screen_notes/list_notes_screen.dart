@@ -120,11 +120,12 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
                                             noteDescription: textController.text,
                                           ),
                                         ));
-
                                         bloc.add(GetAllNotesEvent());
+                                        titleController.clear();
+                                        textController.clear();
                                         Navigator.pop(context);
                                       }
-                                      if (titleController.text.isEmpty && textController.text.isEmpty) {
+                                      else if (titleController.text.isEmpty && textController.text.isEmpty) {
                                         showSnackBar(context, AppStrings.fieldCannotBeEmpty);
                                       } else if (titleController.text.isEmpty) {
                                         showSnackBar(context, AppStrings.fillTitleField);
@@ -132,8 +133,7 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
                                         showSnackBar(context, AppStrings.fillTextField);
                                       }
                                     });
-                                    titleController.clear();
-                                    textController.clear();
+
                                   },
                                   child: const Text(AppStrings.buttonSave),
                                 ),

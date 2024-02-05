@@ -29,7 +29,7 @@ abstract class AppStrings {
   static const String fillTextField = 'Fill in the text field';
 
   //States
-  static const String stringListScreenIsEmpty = 'ListScreenIsEmpty';
+  static const String stringListScreenIsEmpty = 'List Screen Is Empty';
   static const String stringNoteNotFound = 'Note not found';
   static const String stringUnknownState = 'Unknown state';
 
