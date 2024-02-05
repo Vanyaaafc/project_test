@@ -1,13 +1,12 @@
-import 'dart:async';
-
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
 
 import '../../../core/hive/hive_note_service.dart';
 import '../../../data/model/note_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'list_screen_event.dart';
+
 part 'list_screen_state.dart';
 
 class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
@@ -21,7 +20,8 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
     on<SearchNoteEvent>(_searchNoteEvent);
   }
 
-  void _addNoteEvent(CreateNewNoteEvent event, Emitter<ListScreenState> emit) async {
+  void _addNoteEvent(
+      CreateNewNoteEvent event, Emitter<ListScreenState> emit) async {
     emit(AddNoteState());
     try {
       await noteService.addNoteToBox(event.model);
@@ -31,7 +31,8 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
     }
   }
 
-  void _deleteNoteEvent(DeleteNoteEvent event, Emitter<ListScreenState> emit) async {
+  void _deleteNoteEvent(
+      DeleteNoteEvent event, Emitter<ListScreenState> emit) async {
     try {
       await noteService.deleteNoteFromBox(event.id);
       final result = await noteService.getAllNotesFromBox();
@@ -46,11 +47,12 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
     }
   }
 
-  void _getAllNotesEvent(GetAllNotesEvent event, Emitter<ListScreenState> emit) async {
+  void _getAllNotesEvent(
+      GetAllNotesEvent event, Emitter<ListScreenState> emit) async {
     emit(ListScreenIsLoading());
     try {
       final result = await noteService.getAllNotesFromBox();
-      if(result.isEmpty){
+      if (result.isEmpty) {
         emit(ListScreenIsEmpty(noteList: []));
       } else {
         emit(ListScreenIsLoaded(noteList: result));
@@ -60,7 +62,8 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
     }
   }
 
-  void _editNoteEvent(EditNoteEvent event, Emitter<ListScreenState> emit) async {
+  void _editNoteEvent(
+      EditNoteEvent event, Emitter<ListScreenState> emit) async {
     emit(EditNoteState());
     try {
       await noteService.editNoteInBox(event.model);
@@ -71,7 +74,8 @@ class ListScreenBloc extends Bloc<ListScreenEvent, ListScreenState> {
     }
   }
 
-  void _searchNoteEvent(SearchNoteEvent event, Emitter<ListScreenState> emit) async {
+  void _searchNoteEvent(
+      SearchNoteEvent event, Emitter<ListScreenState> emit) async {
     emit(ListScreenIsLoading());
     try {
       final result = await noteService.searchNotes(event.keywords);
