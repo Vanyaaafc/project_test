@@ -20,7 +20,7 @@ class ListScreenIsLoaded extends ListScreenState {
   List<Object> get props => [noteList];
 
   @override
-  String toString() => 'ListScreenIsLoaded: $noteList';
+  String toString() => 'List Screen Is Loaded: $noteList';
 }
 
 class ListScreenIsEmpty extends ListScreenState {
@@ -32,7 +32,7 @@ class ListScreenIsEmpty extends ListScreenState {
   List<Object> get props => [noteList];
 
   @override
-  String toString() => 'ListScreenIsLoaded: $noteList';
+  String toString() => 'List Screen Is Loaded: $noteList';
 }
 
 class NoteNotFound extends ListScreenState {}

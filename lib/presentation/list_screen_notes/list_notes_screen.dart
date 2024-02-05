@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_comitons_project/core/resources/app_sizes.dart';
 import '../../core/di/injection_container.dart';
 import '../../core/resources/app_strings.dart';
 import '../../core/resources/app_styles.dart';
@@ -34,7 +33,7 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
           children: [
             //Search TextField
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(AppSizes.k8),
               child: TextField(
                 controller: searchController,
                 decoration: const InputDecoration(
@@ -66,7 +65,7 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
                   children: <Widget>[
                     Dialog(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(AppSizes.k16),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -78,7 +77,7 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
                               ),
                             ),
                             const SizedBox(
-                              height: 10,
+                              height: AppSizes.k10,
                             ),
 
                             //Dialog Window Title Text Field
@@ -91,7 +90,7 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
                               ),
                               maxLines: null,
                             ),
-                            const SizedBox(height: 16.0),
+                            const SizedBox(height: AppSizes.k16),
 
                             //Dialog Window Text TextField
                             TextField(
@@ -103,7 +102,7 @@ class _ListNotesScreenState extends State<ListNotesScreen> {
                               ),
                               maxLines: null,
                             ),
-                            const SizedBox(height: 16.0),
+                            const SizedBox(height: AppSizes.k16),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -222,7 +221,7 @@ class _ViewState extends State<_View> {
               return InkWell(
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      const EdgeInsets.symmetric(horizontal: AppSizes.k4, vertical: AppSizes.k2),
 
                   // Show Card Detail
                   child: GestureDetector(
@@ -257,7 +256,7 @@ class _ViewState extends State<_View> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  height: 10,
+                                  height: AppSizes.k10,
                                 ),
 
                                 // Text name in Card
@@ -265,7 +264,7 @@ class _ViewState extends State<_View> {
                                   padding: AppStyles.paddingNote,
                                   child: Text(
                                     noteList[index].noteDescription,
-                                    style: AppStyles.textStyle,
+                                    style: AppStyles.textStyleStandart,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                   ),
@@ -284,7 +283,7 @@ class _ViewState extends State<_View> {
                                 builder: (BuildContext context) {
                                   return Dialog(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
+                                      padding: const EdgeInsets.all(AppSizes.k16),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -296,7 +295,7 @@ class _ViewState extends State<_View> {
                                             ),
                                           ),
                                           const SizedBox(
-                                            height: 10,
+                                            height: AppSizes.k10,
                                           ),
 
                                           // Title in Edit Card Info
@@ -310,7 +309,7 @@ class _ViewState extends State<_View> {
                                                   const OutlineInputBorder(),
                                             ),
                                           ),
-                                          const SizedBox(height: 16.0),
+                                          const SizedBox(height: AppSizes.k16),
 
                                           //Text in Edit Card Info
                                           TextField(
@@ -325,7 +324,7 @@ class _ViewState extends State<_View> {
                                             ),
                                             maxLines: null,
                                           ),
-                                          const SizedBox(height: 16.0),
+                                          const SizedBox(height: AppSizes.k16),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceAround,
