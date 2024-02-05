@@ -17,29 +17,35 @@ class CreateNewNoteEvent extends ListScreenEvent {
   List<Object?> get props => [model];
 }
 
+
 class EditNoteEvent extends ListScreenEvent {
-  final int index;
   final NoteModel model;
 
   EditNoteEvent({
-    required this.index,
     required this.model,
   });
 
   @override
-  List<Object?> get props => [index, model];
+  List<Object?> get props => [model];
 }
 
 
 class DeleteNoteEvent extends ListScreenEvent {
-  final int index;
+  final int id;
   final int noteListLength;
 
-  DeleteNoteEvent({required this.index, required this.noteListLength});
+  DeleteNoteEvent({required this.id, required this.noteListLength});
 
   @override
-  List<Object?> get props => [index, noteListLength];
+  List<Object?> get props => [id, noteListLength];
 }
 
-class SearchNoteEvent extends ListScreenEvent {}
+class SearchNoteEvent extends ListScreenEvent {
+  final String keywords;
+
+  SearchNoteEvent({required this.keywords});
+
+  @override
+  List<Object?> get props => [keywords];
+}
 
